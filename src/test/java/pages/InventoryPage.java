@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.xml.transform.Source;
+import java.nio.file.WatchEvent;
 import java.time.Duration;
 import java.util.List;
 
@@ -16,33 +18,35 @@ public class InventoryPage extends BasePage{
 
     //Locators
     By cartPageLocator = By.xpath("//a[@class='shopping_cart_link']");
-    By itemLocator = By.xpath("//div[@class='inventory_item']");
-    By itemNameLocator = By.xpath("//div[@class='inventory_item_name']");
-    By addToCartLocator = By.xpath("//button[@class='btn btn_primary btn_small btn_inventory ']");
+    By cartItemLocator = By.xpath("//div[@class='inventory_item']");
+    By cartItemNameSelector = By.cssSelector("div.inventory_item_name ");
 
-
-    public InventoryPage(WebDriver driver){
-        super(driver);
+    public InventoryPage(WebDriver webDriver){
+        super(webDriver);
+        driver = webDriver;
     }
 
-    public void open(){
+    public InventoryPage open(){
         driver.get(url);
+        return this;
     }
 
-    public void waitPageIsLoaded(){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.presenceOfElementLocated(cartPageLocator));
+    public InventoryPage waitPageIsLoaded(){
+        isElementPresent(cartPageLocator, "The page is not loaded.");
+        return this;
     }
 
-    public void addItemToCart(String itemName){
+    public InventoryPage addItemToCart(String itemName) throws InterruptedException {
 
-        List<WebElement> allElements = driver.findElements(itemNameLocator);
+        List<WebElement> itemsList = driver.findElements(cartItemLocator);
 
-        for(WebElement element : allElements){
-            if(element.findElements()getText().equals(itemName)){
-                element.findElements(addToCartLocator);
+        for(WebElement item : itemsList){
+            if(item.findElement(cartItemNameSelector).getText().equals(itemName)){
+                item.findElement(By.cssSelector("button")).click();
+                break;
             }
         }
-    }
 
+        return this;
+    }
 }
