@@ -1,55 +1,55 @@
 package pages;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
 
 import java.time.Duration;
 
-public class AuthPage extends BasePage{
+import static com.codeborne.selenide.Selenide.$;
 
-    WebDriver driver;
+public class AuthPage{
 
-    String url = "https://www.saucedemo.com/";
-
-    // Locators
-    By usernameLocator = By.id("user-name");
-    By passwordLocator = By.id("password");
-    By loginLocator = By.id("login-button");
-
-    public AuthPage(WebDriver webDriver){
-        super(webDriver);
-        driver = webDriver;
-    }
-
-    public AuthPage open(){
-        driver.get(url);
-        return this;
-    }
+    private final SelenideElement usernameLocator = $(By.id("user-name"));
+    private final SelenideElement passwordLocator = $(By.id("password"));
+    private final SelenideElement loginLocator = $(By.id("login-button"));
 
     public AuthPage waitPageIsLoaded(){
-        isElementPresent(usernameLocator, "Authentication page is not loaded.");
+        Allure.step("Wait till the page is open");
+        usernameLocator.should(Condition.appear);
         return this;
     }
 
     public AuthPage enterUsername(String username){
-        WebElement usernameFld = driver.findElement(usernameLocator);
-        usernameFld.clear();
-        usernameFld.sendKeys(username);
+
+        Allure.step("Enter Username");
+
+        usernameLocator.should(Condition.visible, Duration.ofSeconds(2));
+        usernameLocator.clear();
+        usernameLocator.sendKeys(username);
         return this;
     }
 
     public AuthPage enterPassword(String password){
-        WebElement passwordFld = driver.findElement(passwordLocator);
-        passwordFld.clear();
-        passwordFld.sendKeys(password);
+
+        Allure.step("Enter Password");
+
+        usernameLocator.should(Condition.visible, Duration.ofSeconds(2));
+        passwordLocator.clear();
+        passwordLocator.sendKeys(password);
         return this;
     }
 
     public InventoryPage clickToLogin(){
-        driver.findElement(loginLocator).click();
-        return new InventoryPage(driver);
+
+        Allure.step("Click on login button");
+
+        loginLocator.should(Condition.clickable, Duration.ofSeconds(2));
+        loginLocator.click();
+        return new InventoryPage();
     }
 }

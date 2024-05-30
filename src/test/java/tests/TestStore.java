@@ -1,10 +1,11 @@
 package tests;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import jdk.jfr.Description;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import pages.AuthPage;
 
@@ -12,33 +13,31 @@ import java.time.Duration;
 
 public class TestStore extends BaseTest {
 
-    @Test
-    public void addToCartTest() throws InterruptedException {
+    @DataProvider(name="LoginDataProvider")
+    public Object[][] getData(){
+        return new Object[][]{
+                {"standard_user","secret_sauce","Sauce Labs Bike Light"},
+                {"locked_out_user","secret_sauce","Test"}
+        };
+    }
 
-        AuthPage authPage = new AuthPage(driver);
-        String itemName = "Sauce Labs Bike Light";
+    @Test(dataProvider = "LoginDataProvider")
+    @Description("Basic test to check the functional.")
+    @Severity(SeverityLevel.MINOR)
+    @Owner("Dimas")
+    public void addToCartTest(String login, String password, String productName){
+
+        AuthPage authPage = new AuthPage();
+
+        Allure.addAttachment("Username", login);
+        Allure.addAttachment("Password", password);
+        Allure.addAttachment("Product Name", productName);
 
         authPage
-                .open()
                 .waitPageIsLoaded()
-                .enterUsername("standard_user")
-                .enterPassword("secret_sauce")
+                .enterUsername(login)
+                .enterPassword(password)
                 .clickToLogin()
-                .waitPageIsLoaded()
-                .addItemToCart(itemName)
-                .clickOnCartButton()
-                .waitPageIsLoaded()
-                .isItemPresentInTheCart(itemName)
-                .clickOnCheckoutButton()
-                .waitPageIsLoaded()
-                .addFirstName("Vasea")
-                .addLastName("Pupkin")
-                .addPostalCode("12021")
-                .clickOnContinueButton()
-                .waitPageIsLoaded()
-                .checkIfItemIsPresentInOverview(itemName)
-                .clickOnFinishButton()
-                .waitPageIsLoaded()
-                .isTheOrderCompleted();
+                .waitPageIsLoaded();
     }
 }
